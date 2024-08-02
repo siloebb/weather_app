@@ -5,6 +5,9 @@ import 'package:weather_app/blocs/forecast_current/forecast_cubit.dart';
 import 'package:weather_app/blocs/localization/localization_cubit.dart';
 import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/ui/widgets/current_forecast_widget.dart';
+import 'package:weather_app/ui/widgets/map_with_search.dart';
+
+import '../widgets/ab_variator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,8 +37,16 @@ class _HomePageState extends State<HomePage> {
         },
         builder: (context, state) {
           if (state is ForecastCurrentLoaded) {
-            return HomeLoadedFragment(
-              currentForecast: state.currentForecast,
+            return SingleChildScrollView(
+              child: AbVariator(
+                widgetA: HomeLoadedFragment(
+                  currentForecast: state.currentForecast,
+                ),
+                widgetB: SizedBox(
+                  height: 500,
+                  child: MapWithSearch(),
+                ),
+              ),
             );
           }
 

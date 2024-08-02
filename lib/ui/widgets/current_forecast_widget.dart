@@ -15,54 +15,59 @@ class CurrentForecastWidget extends StatelessWidget {
       child: Card(
         margin: const EdgeInsets.all(8),
         child: SizedBox(
-          height: 200,
-          width: 180,
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FutureBuilder<String>(
-                  initialData: '...',
-                  future: _getCityName(
-                      currentForecast.latitude, currentForecast.latitude),
-                  builder: (_, snap) {
-                    return Text(
-                      snap.data ?? 'erro',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                  },
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      currentForecast.currentWeather.temperature.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    Text(
-                      currentForecast.currentWeatherUnits.temperature
-                          .toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                WeatherIcon(
-                  weatherCode: currentForecast.currentWeather.weathercode,
-                ),
-                const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ForecastDailyPage(),
+          height: 240,
+          width: 200,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FutureBuilder<String>(
+                    initialData: '...',
+                    future: _getCityName(
+                        currentForecast.latitude, currentForecast.latitude),
+                    builder: (_, snap) {
+                      return Text(
+                        snap.data ?? 'erro',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        currentForecast.currentWeather.temperature.toString(),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    );
-                  },
-                  child: const Text('Ver próximios dias'),
-                ),
-              ],
+                      Text(
+                        currentForecast.currentWeatherUnits.temperature
+                            .toString(),
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  WeatherIcon(
+                    weatherCode: currentForecast.currentWeather.weathercode,
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ForecastDailyPage(),
+                        ),
+                      );
+                    },
+                    child: const Text('Ver próximios dias'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

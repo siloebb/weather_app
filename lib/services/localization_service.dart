@@ -70,7 +70,7 @@ class LocalizationService {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
       if (placemarks.isNotEmpty) {
-        String cityName = placemarks.first.locality ??
+        String cityName = placemarks.first.name ??
             placemarks.first.subAdministrativeArea ??
             "Cidade não encontrada";
         return cityName;

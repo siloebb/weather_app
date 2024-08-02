@@ -3,12 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app/blocs/forecast_current/forecast_cubit.dart';
 import 'package:weather_app/repositories/forecast_repository.dart';
 import 'package:weather_app/services/localization_service.dart';
+import 'package:weather_app/services/remote_config_service.dart';
 import 'package:weather_app/ui/pages/home_page.dart';
 
 import 'blocs/forecast_daily/forecast_daily_cubit.dart';
 import 'blocs/localization/localization_cubit.dart';
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  LocalRemoteConfig.setup();
+
   final LocalizationService localizationService = LocalizationService();
   final forecastRepository = ForecastRepository();
   final localizationCubit = LocalizationCubit(localizationService);
