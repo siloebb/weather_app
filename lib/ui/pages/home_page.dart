@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app/blocs/forecast_current/forecast_cubit.dart';
 import 'package:weather_app/blocs/localization/localization_cubit.dart';
 import 'package:weather_app/models/forecast.dart';
+import 'package:weather_app/services/native_service.dart';
 import 'package:weather_app/ui/widgets/current_forecast_widget.dart';
 import 'package:weather_app/ui/widgets/map_with_search.dart';
 
@@ -27,7 +28,16 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meu Tempo'),
+        title: FutureBuilder<String>(
+          initialData: 'Meu tempo',
+          future: NativeService.getPlatformVersion(),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting) {
+              return const Text('Meu tempo');
+            }
+            return Text('Meu tempo no | ${snapshot.data!} |');
+          },
+        ),
       ),
       body: BlocConsumer<ForecastCurrenttCubit, ForecastCurrentState>(
         listener: (context, state) {
