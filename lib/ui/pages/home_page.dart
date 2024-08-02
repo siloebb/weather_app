@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
             if(snapshot.connectionState == ConnectionState.waiting) {
               return const Text('Meu tempo');
             }
-            return Text('Meu tempo no | ${snapshot.data!} |');
+            return Text('Meu tempo no | ${snapshot.data ?? ''} |');
           },
         ),
       ),
