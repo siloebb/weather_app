@@ -1,5 +1,5 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_app/blocs/localization/localization_cubit.dart';
 
 class LocalizationService {
   /// Determine the current position of the device.
@@ -47,6 +47,38 @@ class LocalizationService {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
+  }
+
+  static Future<(double latitude, double longitude)?> getCoordinatesFromCity(
+      String cityName) async {
+    try {
+      List<Location> locations = await locationFromAddress(cityName);
+      if (locations.isNotEmpty) {
+        double latitude = locations.first.latitude;
+        double longitude = locations.first.longitude;
+        return (latitude, longitude);
+      }
+    } catch (e) {
+      print('Erro ao obter coordenadas: $e');
+    }
+    return null;
+  }
+
+  static Future<String?> getCityFromCoordinates(
+      double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
+      if (placemarks.isNotEmpty) {
+        String cityName = placemarks.first.locality ??
+            placemarks.first.subAdministrativeArea ??
+            "Cidade não encontrada";
+        return cityName;
+      }
+    } catch (e) {
+      print('Erro ao obter nome da cidade: $e');
+    }
+    return null;
   }
 }
 

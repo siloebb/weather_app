@@ -9,12 +9,15 @@ class LocalizationCubit extends Cubit<LocalizationState> {
 
   final LocalizationService localizationService;
 
+  Position? lastPosition;
+
   LocalizationCubit(this.localizationService) : super(LocalizationUnknown());
 
   changeLocalization(String locale) async {
     emit(LocalizationUnknown());
     try {
       final position = await localizationService.determinePosition();
+      lastPosition = position;
       emit(LocalizationLoaded(position));
     } catch (e) {
       emit(LocalizationError('Error: $e'));
@@ -25,6 +28,7 @@ class LocalizationCubit extends Cubit<LocalizationState> {
     emit(LocalizationUnknown());
     try {
       final position = await localizationService.determinePosition();
+      lastPosition = position;
       emit(LocalizationLoaded(position));
     } catch (e) {
       emit(LocalizationError('Error: $e'));

@@ -1,10 +1,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:weather_app/blocs/forecast/forecast_cubit.dart';
-import 'package:weather_app/providers/position_provider.dart';
-import 'package:weather_app/repositories/forecast_repository.dart';
+import 'package:weather_app/blocs/forecast_current/forecast_cubit.dart';
+import 'package:weather_app/blocs/localization/localization_cubit.dart';
+import 'package:weather_app/models/forecast.dart';
 import 'package:weather_app/ui/widgets/current_forecast_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,73 +14,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late ForecastCubit _forecastCubit;
-  late PositionProvider _positionProvider;
-
   @override
   void initState() {
     super.initState();
-    _forecastCubit = ForecastCubit(ForecastRepository());
-    _loadPage();
-  }
-
-  _loadPage() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _positionProvider = Provider.of<PositionProvider>(
-        context,
-        listen: false,
-      );
-      _positionProvider.resetPosition();
-      _positionProvider.addListener(listenerPosition);
-    });
-  }
-
-  listenerPosition() {
-    if (_positionProvider.hasError) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: const Text('Erro'),
-            content: Text(_positionProvider.errorMessage ?? ''),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Ok'),
-              ),
-              TextButton(
-                onPressed: () {
-                  AppSettings.openAppSettings();
-                },
-                child: const Text('Configurações'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      _forecastCubit.loadForecast(_positionProvider.currentPosition!);
-    }
+    context.read<LocalizationCubit>().resetLocalization();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meu Tempo'),
+        title: const Text('Meu Tempo'),
       ),
-      body: BlocBuilder(
-        bloc: _forecastCubit,
+      body: BlocConsumer<ForecastCurrenttCubit, ForecastCurrentState>(
+        listener: (context, state) {
+          if (state is ForecastCurrentError) {
+            _showErrorPermission(state.error);
+          }
+        },
         builder: (context, state) {
-          if (state is ForecastLoaded) {
-            return CurrentForecastWidget(
+          if (state is ForecastCurrentLoaded) {
+            return HomeLoadedFragment(
               currentForecast: state.currentForecast,
             );
           }
 
-          if (state is ForecastError) {
+          if (state is ForecastCurrentError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -90,18 +48,78 @@ class _HomePageState extends State<HomePage> {
                     'Erro:',
                   ),
                   Text(state.error),
+                  const SizedBox(height: 8),
+                  IconButton(
+                    onPressed: () {
+                      context.read<ForecastCurrenttCubit>().reset();
+                    },
+                    icon: const Icon(Icons.refresh),
+                  ),
                 ],
               ),
             );
           }
 
           return const Center(
-            child: Text(
-              'Carregando Previsão...',
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Carregando Previsão...',
+                ),
+                SizedBox(height: 8),
+                CircularProgressIndicator(),
+              ],
             ),
           );
         },
       ),
+    );
+  }
+
+  _showErrorPermission(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Erro'),
+          content: Text(errorMessage),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Ok'),
+            ),
+            TextButton(
+              onPressed: () {
+                AppSettings.openAppSettings();
+              },
+              child: const Text('Configurações'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class HomeLoadedFragment extends StatelessWidget {
+  final Forecast currentForecast;
+
+  const HomeLoadedFragment({
+    super.key,
+    required this.currentForecast,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CurrentForecastWidget(
+          currentForecast: currentForecast,
+        ),
+      ],
     );
   }
 }

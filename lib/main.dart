@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app/blocs/forecast_current/forecast_cubit.dart';
+import 'package:weather_app/repositories/forecast_repository.dart';
+import 'package:weather_app/services/localization_service.dart';
 import 'package:weather_app/ui/pages/home_page.dart';
-import 'package:weather_app/ui/pages/splash_page.dart';
 
-import 'providers/position_provider.dart';
+import 'blocs/forecast_daily/forecast_daily_cubit.dart';
+import 'blocs/localization/localization_cubit.dart';
 
 void main() {
+  final LocalizationService localizationService = LocalizationService();
+  final forecastRepository = ForecastRepository();
+  final localizationCubit = LocalizationCubit(localizationService);
   runApp(
-    MultiProvider(
+    MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => PositionProvider(),
+        BlocProvider(create: (context) => localizationCubit),
+        BlocProvider<ForecastDailyCubit>(
+          create: (context) => ForecastDailyCubit(
+            forecastRepository,
+            localizationCubit.stream,
+          ),
+        ),
+        BlocProvider<ForecastCurrenttCubit>(
+          create: (context) => ForecastCurrenttCubit(
+            forecastRepository,
+            localizationCubit.stream,
+          ),
         ),
       ],
       child: const MyApp(),
@@ -27,21 +43,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

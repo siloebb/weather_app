@@ -1,8 +1,6 @@
-
-
 import 'package:weather_app/models/current_weather_units.dart';
-
 import 'current_weather.dart';
+import 'daily.dart';
 
 class Forecast {
   final double latitude;
@@ -12,6 +10,7 @@ class Forecast {
   final String timezoneAbbreviation;
   final CurrentWeather currentWeather;
   final CurrentWeatherUnits currentWeatherUnits;
+  final List<DailyWeather>? dailyWeather;
 
   Forecast({
     required this.latitude,
@@ -21,6 +20,7 @@ class Forecast {
     required this.timezoneAbbreviation,
     required this.currentWeather,
     required this.currentWeatherUnits,
+    this.dailyWeather,
   });
 
   factory Forecast.fromJson(Map<String, dynamic> json) {
@@ -31,7 +31,11 @@ class Forecast {
       timezone: json['timezone'],
       timezoneAbbreviation: json['timezone_abbreviation'],
       currentWeather: CurrentWeather.fromJson(json['current_weather']),
-      currentWeatherUnits: CurrentWeatherUnits.fromJson(json['current_weather_units']),
+      currentWeatherUnits:
+          CurrentWeatherUnits.fromJson(json['current_weather_units']),
+      dailyWeather: json['daily'] != null
+          ? DailyWeather.fromJsonList(json['daily'])
+          : null,
     );
   }
 }
