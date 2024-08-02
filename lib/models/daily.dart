@@ -3,12 +3,14 @@ class DailyWeather {
   final double minTemperature;
   final double maxTemperature;
   final double precipitation;
+  final int weatherCode;
 
   DailyWeather({
     required this.date,
     required this.minTemperature,
     required this.maxTemperature,
     required this.precipitation,
+    required this.weatherCode,
   });
 
   factory DailyWeather.fromJson(Map<String, dynamic> json, int index) {
@@ -17,6 +19,7 @@ class DailyWeather {
       minTemperature: json['temperature_2m_min'][index].toDouble(),
       maxTemperature: json['temperature_2m_max'][index].toDouble(),
       precipitation: json['precipitation_sum'][index].toDouble(),
+      weatherCode: json['weathercode'][index],
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app/blocs/localization/localization_cubit.dart';
 import 'package:weather_app/models/forecast.dart';
+import 'package:weather_app/ui/widgets/forecast_day_item.dart';
 
 import '../../blocs/forecast_daily/forecast_daily_cubit.dart';
 
@@ -13,14 +14,13 @@ class ForecastDailyPage extends StatefulWidget {
 }
 
 class _ForecastDailyPageState extends State<ForecastDailyPage> {
-  
   @override
   void initState() {
     super.initState();
     final lastPosition = context.read<LocalizationCubit>().lastPosition;
     context.read<ForecastDailyCubit>().loadForecastDaily(lastPosition!);
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +38,14 @@ class _ForecastDailyPageState extends State<ForecastDailyPage> {
               itemCount: forecast.dailyWeather?.length ?? 0,
               itemBuilder: (context, index) {
                 var dailyWeather = forecast.dailyWeather![index];
+                return ForecastDayWidget(
+                  weatherCode: dailyWeather.weatherCode,
+                  date: dailyWeather.date,
+                  minTemperature: dailyWeather.minTemperature,
+                  maxTemperature: dailyWeather.maxTemperature,
+                  temperatureSymbol: "°C",
+                );
+
                 return ListTile(
                   title: Text('Data: ${dailyWeather.date}'),
                   subtitle: Text(
